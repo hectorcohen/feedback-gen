@@ -1,9 +1,9 @@
 import { ColumnDef } from "@tanstack/react-table";
+import { Eye, Settings2 } from "lucide-react";
+import Link from "next/link";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
-import { Projects } from "./list-projects";
-import { Eye } from "lucide-react";
-import Link from "next/link";
+import { Projects } from "./projects-table";
 
 export const columns: ColumnDef<Projects>[] = [
   {
@@ -55,7 +55,12 @@ export const columns: ColumnDef<Projects>[] = [
           </Button>
         </Link>
         <Button variant="destructive">Delete</Button>
-        <Button variant="secondary">Update</Button>
+        <Link href={`/projects/${row.original?.id}/preferences`}>
+          <Button variant="secondary">
+            Update
+            <Settings2 className="h-5 w-5 ml-2 text-indigo-400" />
+          </Button>
+        </Link>
       </div>
     ),
   },

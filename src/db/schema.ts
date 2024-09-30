@@ -1,11 +1,12 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   integer,
   pgTable,
   serial,
   text,
   varchar,
-  boolean
+  boolean,
+  timestamp,
 } from "drizzle-orm/pg-core";
 
 export const projects = pgTable("projects", {
@@ -14,6 +15,9 @@ export const projects = pgTable("projects", {
   description: text("description"),
   url: text("url"),
   userId: varchar("user_id"),
+  createdAt: timestamp("created_at", { mode: "string" })
+    .notNull()
+    .default(sql`now()`),
 });
 
 export const feedbacks = pgTable("feedbacks", {
@@ -23,6 +27,9 @@ export const feedbacks = pgTable("feedbacks", {
   userEmail: text("user_email"),
   message: text("message"),
   rating: integer("rating"),
+  createdAt: timestamp("created_at", { mode: "string" })
+    .notNull()
+    .default(sql`now()`),
 });
 
 export const projectsRelations = relations(projects, ({ many }) => ({
@@ -37,9 +44,9 @@ export const feedbacksRelations = relations(feedbacks, ({ one }) => ({
 }));
 
 export const subscriptions = pgTable("subscriptions", {
-  id: serial('id').primaryKey(),
+  id: serial("id").primaryKey(),
   userId: varchar("user_id"),
-  stripeCustomerId: text('stripe_customer_id'),
-  stripeSubscriptionId: text('stripe_subscription_id'),
-  subscribed: boolean('subscribed'), 
-})
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  subscribed: boolean("subscribed"),
+});

@@ -1,6 +1,13 @@
 "use client";
-import React from "react";
+import { create_project } from "@/actions/create-project";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -10,25 +17,24 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  DialogContent,
-  DialogDescription,
-  DialogTrigger,
-  Dialog,
-  DialogFooter,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { useForm } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowRight, Plus } from "lucide-react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { project_schema, project_schema_type } from "@/schemas/project/schema";
-import { create_project } from "@/actions/create-project";
-import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { MAX_FREE_PROJECTS } from "@/lib/payments";
+import { project_schema, project_schema_type } from "@/schemas/project/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { ArrowRight, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import React from "react";
+import { useForm } from "react-hook-form";
 
-export default function CreateProductForm() {
+
+export default function CreateProductForm({
+  subscribed, numberOfProjects,
+}: {
+  subscribed?: boolean | null;
+  numberOfProjects: number
+}) {
   const router = useRouter();
   const [dialogState, setDialogState] = React.useState<boolean>(false);
   const { toast } = useToast();
@@ -67,7 +73,7 @@ export default function CreateProductForm() {
 
   return (
     <div>
-      <Button onClick={onOpenDialog}>
+      <Button disabled={!subscribed && numberOfProjects >= MAX_FREE_PROJECTS} onClick={onOpenDialog}>
         Create new project <Plus className="h-5 w-5 ml-2" />
       </Button>
       <Dialog open={dialogState} onOpenChange={onCloseDialog}>

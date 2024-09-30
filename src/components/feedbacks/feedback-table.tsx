@@ -1,8 +1,6 @@
-"use client"
+"use client";
 
-import React from "react";
 import {
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -13,24 +11,39 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { columns } from "./column-projects";
+import React from "react";
+import { Button } from "../ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import { Projects } from "./list-projects";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
+import { columns } from "../projects/column-projects";
 
+import { feedbacks } from "@/db/schema";
+import { InferSelectModel } from "drizzle-orm";
+import { feedbackColumns } from "./column-feedbacks";
+import { ChartSpline, ChevronLeft, ChevronRight, ListCollapse } from "lucide-react";
+import Link from "next/link";
+
+export type Feedbacks = InferSelectModel<typeof feedbacks>;
 
 type Props = {
-    projects: Projects[]
-}
+  feedbacks: Feedbacks[];
+  projectId: number | null | undefined;
+};
 
-const ProjectListDataTable:  React.FC<Props> = ({projects}) => {
+const FeedbackListDataTable: React.FC<Props> = ({ feedbacks, projectId }) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -40,8 +53,8 @@ const ProjectListDataTable:  React.FC<Props> = ({projects}) => {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data: projects || [],
-    columns,
+    data: feedbacks || [],
+    columns: feedbackColumns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -60,41 +73,58 @@ const ProjectListDataTable:  React.FC<Props> = ({projects}) => {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex justify-between items-center py-4">
         <Input
-          placeholder="Filter projects"
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter feedbacks"
+          value={
+            (table.getColumn("userName")?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+            table.getColumn("userName")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns
+        <div className="flex justify-end items-center gap-2">
+          {feedbacks.length > 0 ? (
+          <Link href={`${projectId}/analytics`}>
+            <Button variant="outline" className="ml-2">
+              <ChartSpline className="text-violet-400 mr-2 h-5 w-5" />
+              Show Analytics
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          </Link>
+
+          ) : (<Button variant="outline" disabled>
+            <ChartSpline  className="text-violet-400 mr-2 h-5 w-5" />
+            Show Analytics
+          </Button>)}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                <ListCollapse className="h-5 w-5 mr-2 text-fuchsia-400" />
+                Columns
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -124,7 +154,7 @@ const ProjectListDataTable:  React.FC<Props> = ({projects}) => {
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} width={cell.column.columnDef.size}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -151,14 +181,14 @@ const ProjectListDataTable:  React.FC<Props> = ({projects}) => {
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="space-x-2">
+        <div className="flex justify-between items-center space-x-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            <ChevronLeft className="w-5 h-5 mr-2" /> Previous
           </Button>
           <Button
             variant="outline"
@@ -166,7 +196,7 @@ const ProjectListDataTable:  React.FC<Props> = ({projects}) => {
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Next
+            Next <ChevronRight className="w-5 h-5 ml-2" />
           </Button>
         </div>
       </div>
@@ -174,4 +204,4 @@ const ProjectListDataTable:  React.FC<Props> = ({projects}) => {
   );
 };
 
-export default ProjectListDataTable;
+export default FeedbackListDataTable;

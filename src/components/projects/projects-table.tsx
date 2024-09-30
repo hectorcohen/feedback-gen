@@ -1,39 +1,23 @@
 "use client"
 
-import {
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable
-} from "@tanstack/react-table";
-import React from "react";
-import { Button } from "../ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Input } from "../ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import { columns } from "./column-projects";
+import { projects } from '@/db/schema';
+import { ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState } from '@tanstack/react-table';
+import { InferSelectModel } from 'drizzle-orm';
+import { ListCollapse } from 'lucide-react';
+import React from 'react';
+import { Button } from '../ui/button';
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import { Input } from '../ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { columns } from './column-projects';
 
-import { feedbacks } from "@/db/schema";
-import { InferSelectModel } from "drizzle-orm";
-import { feedbackColumns } from "./column-feedbacks";
-
-export type Feedbacks = InferSelectModel<typeof feedbacks>
+export type Projects = InferSelectModel<typeof projects>
 
 type Props = {
-    feedbacks: Feedbacks[]
+    projects: Projects[]
 }
 
-const FeedbackListDataTable:  React.FC<Props> = ({feedbacks}) => {
+const ProjectList: React.FC<Props> = ({projects}) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -43,8 +27,8 @@ const FeedbackListDataTable:  React.FC<Props> = ({feedbacks}) => {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data: feedbacks || [],
-    columns: feedbackColumns,
+    data: projects || [],
+    columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -65,17 +49,17 @@ const FeedbackListDataTable:  React.FC<Props> = ({feedbacks}) => {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter feedbacks"
-          value={(table.getColumn("userName")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter projects"
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("userName")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Columns
+            <ListCollapse className="h-5 w-5 mr-2 text-fuchsia-400" />Columns
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -174,7 +158,7 @@ const FeedbackListDataTable:  React.FC<Props> = ({feedbacks}) => {
         </div>
       </div>
     </div>
-  );
-};
+)
+}
 
-export default FeedbackListDataTable;
+export default ProjectList;
