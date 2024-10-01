@@ -13,29 +13,46 @@ const EmailComponent = () => {
   const exportTemplate = () => {
     // @ts-ignore
     emailEditorRef.current.editor.exportHtml((data) => {
-      const { design } = data;
+      const { design, html } = data;
       console.log("Design", design);
+      console.log('Html', html)
     });
   };
 
   const onLoad = () => {
-    if (emailEditorRef) emailEditorRef.current?.editor?.loadDesign(sample);
+    if (emailEditorRef) {
+      emailEditorRef.current?.editor?.loadDesign(sample);
+    }
+  };
+
+  const toolsConfig = {
+    text: {
+      properties: {
+        text: {
+          value: '<p id="text-block" style="line-height: 140%; color: #FF5733;">This is a new Text block. Change the text.</p>', // Set initial text color
+        },
+        color: {
+          value: '#FF5733', // Initial color in the text editor color picker
+        },
+      },
+    },
   };
 
   return (
     <div>
       <ScrollArea className="w-full h-full rounded-md border p-4">
         <div className="border">
-        <React.StrictMode>
-          <EmailEditor
-            ref={emailEditorRef}
-            onLoad={onLoad}
-            options={{
-              version: "latest",
-            }}
-          />
-        </React.StrictMode>
-        <ScrollBar orientation="horizontal" />
+          <React.StrictMode>
+            <EmailEditor
+              tools={toolsConfig}
+              ref={emailEditorRef}
+              onLoad={onLoad}
+              options={{
+                version: "latest",
+              }}
+            />
+          </React.StrictMode>
+          <ScrollBar orientation="horizontal" />
         </div>
       </ScrollArea>
 

@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, Settings2 } from "lucide-react";
+import { Eye, Settings2, Workflow } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
@@ -54,11 +54,16 @@ export const columns: ColumnDef<Projects>[] = [
             View project <Eye className="h-5 w-5 ml-2" />
           </Button>
         </Link>
-        <Button variant="destructive">Delete</Button>
         <Link href={`/projects/${row.original?.id}/preferences`}>
           <Button variant="secondary">
             Update
             <Settings2 className="h-5 w-5 ml-2 text-indigo-400" />
+          </Button>
+        </Link>
+        <Link href={`/projects/${row.original?.id}/integration`}>
+          <Button variant="secondary">
+            Integration
+            <Workflow className="text-green-400 h-5 w-5 ml-2" />
           </Button>
         </Link>
       </div>

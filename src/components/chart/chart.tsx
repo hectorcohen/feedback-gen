@@ -22,8 +22,8 @@ import { useParams } from "next/navigation";
 import { Bar, BarChart, CartesianGrid, Rectangle, XAxis } from "recharts";
 import Breadcrumbs from "../breadcrumbs";
 import { chartConfig } from "./chart-config";
-import { Button } from "@/components/ui/button";;
-
+import { Button } from "@/components/ui/button";
+import TitleComponent from "../title-component";
 type Feedbacks = InferSelectModel<typeof feedbacks>;
 
 export type FeedbacksChart = Feedbacks & { rating_key: string; fill: string };
@@ -55,21 +55,22 @@ const GlobalChart: React.FC<Props> = ({ data }) => {
             ]}
           />
         </div>
-      <div className="flex justify-between items-center">
-      <div className="flex justify-start items-center gap-2 my-4">
-          <h1 className="text-4xl">Overview</h1>
-          <Kanban className="h-5 w-5 text-violet-400" />
-        </div>
-        <Button variant="outline"><Flag className="w-5 h-5 text-violet-400 mr-2" /> Generate Report</Button>
-      </div> 
+        <TitleComponent
+          title="Overview"
+          description="A global feedbacks chart information"
+          icon={<Kanban className="w-5 h-5 text-violet-400" />}
+          buttonAction={
+            <Button variant="outline">
+              <Flag className="w-5 h-5 text-violet-400 mr-2" /> Generate Report
+            </Button>
+          }
+        />
       </div>
       <div>
         <Card>
           <CardHeader>
             <CardTitle>Global</CardTitle>
-            <CardDescription>
-              {format(new Date(), "yyy-MM-dd")}
-            </CardDescription>
+            <CardDescription>{format(new Date(), "yyy-MM-dd")}</CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig}>

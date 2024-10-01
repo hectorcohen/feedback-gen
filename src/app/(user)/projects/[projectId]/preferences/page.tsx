@@ -1,11 +1,10 @@
-import React from "react";
 import Breadcrumbs from "@/components/breadcrumbs";
-import { Settings2, TableCellsSplit, Palette } from "lucide-react";
-import dynamic from "next/dynamic";
+import FeedbackForm from "@/components/feedback-form";
+import ThemeForm from "@/components/theme-form";
+import TitleComponent from "@/components/title-component";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MessageCircleMore, Settings2, SwatchBook } from "lucide-react";
+import dynamic from "next/dynamic";
 
 const Editor = dynamic(() => import("@/components/email-editor"), {
   ssr: false,
@@ -20,9 +19,30 @@ const PreferencesPage = () => {
           { title: "Preferences", navigation: "/preferences", disabled: true },
         ]}
       />
-      <div className="flex justify-start items-center">
-        <h1 className="text-4xl">Preferences</h1>
-        <Settings2 className="h-5 w-5 ml-2 text-indigo-400" />
+      <TitleComponent
+        title="Preferences"
+        description="On this page you can change some attributes of your form"
+        icon={
+          <Settings2 className="w-5 h-5 text-indigo-400" />
+        }
+      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 ">
+        <div className="flex flex-col gap-3 ">
+          <FeedbackForm formId="feedback-form" />
+          <div className="flex justify-end items-center md:w-full md:flex-start">
+            <Button className="md:w-full" form="feedback-form">
+              Save <MessageCircleMore className="w-5 h-5 ml-2" />
+            </Button>
+          </div>
+        </div>
+        <div className="flex flex-col justify-between gap-3 h-full">
+          <ThemeForm formId="theme-form" />
+          <div className="flex justify-end items-center md:w-full md:flex-start">
+            <Button className="md:w-full" form="theme-form">
+              Save <SwatchBook className="w-5 h-5 ml-2" />
+            </Button>
+          </div>
+        </div>
       </div>
       <div className="flex flex-col gap-3 mt-4">
         <h1 className=" text-2xl">Email Template</h1>
